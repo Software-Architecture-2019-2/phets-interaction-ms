@@ -27,7 +27,7 @@ namespace interaction_ms {
             var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
                 services.AddDbContext<ApiDbContext>(options =>
                         options.UseNpgsql( connectionString )
-                        // options.UseNpgsql("host=localhost;port=5432;database=blogdb;username=bloguser;password=bloguser")
+                        // options.UseNpgsql("host=localhost;port=5432;database=interaction_db;username=phets_interaction;password=phets_interaction")
                 );
         }
 
