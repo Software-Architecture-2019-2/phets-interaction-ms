@@ -71,7 +71,7 @@ namespace interaction_ms.Controllers {
             }
         }
 
-        // GET api/interaction/Create?id_main=1&id_secondary=1
+        // GET api/interaction/Match?id_main=1&id_secondary=1
         [HttpGet]
         [Route("Match")]
         public ActionResult<bool> Get(int id_main, int id_secondary) {
