@@ -5,11 +5,11 @@ public class ApiDbContext: DbContext{
 
     public ApiDbContext(DbContextOptions<ApiDbContext> options): base(options){}
 
-    public DbSet<Match> Matches { get; set;}
+    public DbSet<Interaction> Interactions { get; set;}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder){
         base.OnModelCreating(modelBuilder);
 
-        new MatchMap(modelBuilder.Entity<Match>());
+        new InteractionMap(modelBuilder.Entity<Interaction>());
     }
 }
