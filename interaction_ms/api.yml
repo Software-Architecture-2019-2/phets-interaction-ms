@@ -3,12 +3,12 @@
 swagger: "2.0"
 info:
     version: 1.0.0
-    title: Microservice for Authentication
+    title: Microservice for Interactions
     description: C# + PostgreSQL
     license:
-        name: Software Architecture, 2019-II
-host: localhost:4000
-basePath: /phets_interaction/resources
+        name: phets-interaction-ms
+host: localhost:4005
+basePath: /
 schemes:
     - http
 consumes:
@@ -16,112 +16,80 @@ consumes:
 produces:
     - application/json
 paths:
-    /api/match:
+    /api/interaction/Match:
         get:
-            summary: Returns all interactions
-            operationId: getAllInteractions
+            summary: Returns true if there is a match between two users, false otherwise
+            operationId: verifyMatchState
+            parameters:
+                - name: id_main
+                  in: query
+                  description: The id of user1
+                  required: true
+                  type: integer
+                - name: id_secondary
+                  in: query
+                  description: The id of user2
+                  required: true
+                  type: integer
             responses:
                 "200":
-                    description: Ok
-                "400":
-                    description: Bad Request
-                    schema:
-                        $ref: "#/definitions/ErrorModel"
-                "500":
-                    description: Internal Server Error
-                    schema:
-                        $ref: "#/definitions/ErrorModel"
-    /api/match/{id}:
-        get:
-            summary: Returns interactions of a user with given id
-            operationId: getInteractionsForUser
-            responses:
-                "200":
-                    description: Ok
-                    schema:
-                        $ref: "#/definitions/MatchList"
-                "404":
-                    description: Not found
-                    schema:
-                        $ref: "#/definitions/ErrorModel"
-                "500":
-                    description: Internal Server Error
-                    schema:
-                        $ref: "#/definitions/ErrorModel"
+                    description: Success
 
-    /api/match/Interaction:
+    /api/interaction/Unlike:
+        put:
+            summary: Unlikes a user with a given id after it was liked
+            operationId: unlikeUser
+            parameters:
+                - name: id_main
+                  in: query
+                  description: The id of the user that makes the interaction
+                  required: true
+                  type: integer
+                - name: id_secondary
+                  in: query
+                  description: The id of the user that the interaction is going to be made with
+                  required: true
+                  type: integer
+            responses:
+                "200":
+                    description: Success
+
+    /api/interaction/Create:
         post:
             summary: Creates an interaction between two users
             operationId: createInteraction
             parameters:
                 - name: id_main
-                  in: path
+                  in: query
                   description: The id of the user that makes the interaction
                   required: true
                   type: integer
                 - name: id_secondary
-                  in: path
+                  in: query
                   description: The id of the user that the interaction is going to be made with
                   required: true
                   type: integer
-                - name: match_state
-                  in: path
+                - name: match_1
+                  in: query
                   description: State of the interaction
                   required: true
                   type: bool
             responses:
-                "204":
-                    description: No Content
-                "404":
-                    description: Not Found
-                    schema:
-                        $ref: "#/definitions/ErrorModel"
-                "406":
-                    description: Not Acceptable (Invalid Params)
-                    schema:
-                        $ref: "#/definitions/ErrorModel"
-                "500":
-                    description: unexpected error
-                    schema:
-                        $ref: "#/definitions/ErrorModel"
+                "200":
+                    description: Success
 
 definitions:
     # Users
-    Match:
+    Interaction:
         type: object
         properties:
             Id:
                 type: integer
-            IdAnimalMain:
+            IdMain:
                 type: integer
-            IdAnimalSecondary:
+            IdSecondary:
                 type: integet
-            State:
+            Match_1:
                 type: bool
-
-    UsersList:
-        type: object
-        required:
-            - total
-            - list
-        properties:
-            total:
-                type: number
-            list:
-                type: array
-                items:
-                    $ref: "#/definitions/Match"
-
-    # Errors
-    ErrorModel:
-        type: object
-        required:
-            - message
-            - code
-        properties:
-            message:
-                type: string
-            code:
-                type: number
-            description:
-                type: object
+            Match_2:
+                type: bool
