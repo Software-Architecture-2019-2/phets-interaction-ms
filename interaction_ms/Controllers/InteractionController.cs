@@ -14,32 +14,6 @@ namespace interaction_ms.Controllers {
         public InteractionController(ApiDbContext context){
             this.context = context;
         }
-        
-        // GET api/interaction
-        [HttpGet]
-        public object Get() {
-            // return context.Blogs.Where(b => b.Title.Contains("Title")).Select((c) => new 
-            //     {
-            //         Id = c.Id,
-            //         Title = c.Title,
-            //         Description = c.Description
-            //     }
-            // ).ToList();
-            return context.Interactions.ToList();
-        }
-
-        // GET api/interaction/5
-        [HttpGet("{id}")]
-        public ActionResult<List<Interaction>> Get(int id) {
-            return context.Interactions.Where(b => b.IdMain == id).ToList();
-        }
-
-        // GET api/match?id1=5&id2=2
-        // [Route("Verify")]
-        // public ActionResult<bool> Get(int id1, int id2) {
-
-        //     return context.Matches.Where(b => b.IdAnimalMain == id).ToList();
-        // }
 
         // POST api/interaction/Create?id_main=1&id_secondary=1&match_1=true
         [HttpPost]
@@ -72,6 +46,7 @@ namespace interaction_ms.Controllers {
             }
         }
 
+        // PUT api/interaction/Unlike?id_main=1&id_secondary=1
         [HttpPut]
         [Route("Unlike")]
         public ActionResult Put(int id_main, int id_secondary) {
@@ -96,6 +71,7 @@ namespace interaction_ms.Controllers {
             }
         }
 
+        // GET api/interaction/Create?id_main=1&id_secondary=1
         [HttpGet]
         [Route("Match")]
         public ActionResult<bool> Get(int id_main, int id_secondary) {

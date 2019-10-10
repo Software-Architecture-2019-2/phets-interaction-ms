@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace interaction_ms {
     public class Startup {
@@ -25,14 +26,19 @@ namespace interaction_ms {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
-                services.AddDbContext<ApiDbContext>(options =>
-                        options.UseNpgsql( connectionString )
-                        // options.UseNpgsql("host=localhost;port=5432;database=interaction_db;username=phets_interaction;password=phets_interaction")
-                );
+            services.AddDbContext<ApiDbContext>(options =>
+                    options.UseNpgsql( connectionString )
+                    // options.UseNpgsql("host=localhost;port=5432;database=interaction_db;username=phets_interaction;password=phets_interaction")
+            );
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "phets-interaction-ms", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env) {
+
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
@@ -40,6 +46,10 @@ namespace interaction_ms {
                 app.UseHsts();
             }
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c => {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "phets-interaction-ms");
+            });
             app.UseHttpsRedirection();
             app.UseMvc();
         }

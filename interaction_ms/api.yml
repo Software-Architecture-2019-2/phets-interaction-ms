@@ -1,0 +1,127 @@
+#Test with: http://editor.swagger.io/
+
+swagger: "2.0"
+info:
+    version: 1.0.0
+    title: Microservice for Authentication
+    description: C# + PostgreSQL
+    license:
+        name: Software Architecture, 2019-II
+host: localhost:4000
+basePath: /phets_interaction/resources
+schemes:
+    - http
+consumes:
+    - application/json
+produces:
+    - application/json
+paths:
+    /api/match:
+        get:
+            summary: Returns all interactions
+            operationId: getAllInteractions
+            responses:
+                "200":
+                    description: Ok
+                "400":
+                    description: Bad Request
+                    schema:
+                        $ref: "#/definitions/ErrorModel"
+                "500":
+                    description: Internal Server Error
+                    schema:
+                        $ref: "#/definitions/ErrorModel"
+    /api/match/{id}:
+        get:
+            summary: Returns interactions of a user with given id
+            operationId: getInteractionsForUser
+            responses:
+                "200":
+                    description: Ok
+                    schema:
+                        $ref: "#/definitions/MatchList"
+                "404":
+                    description: Not found
+                    schema:
+                        $ref: "#/definitions/ErrorModel"
+                "500":
+                    description: Internal Server Error
+                    schema:
+                        $ref: "#/definitions/ErrorModel"
+
+    /api/match/Interaction:
+        post:
+            summary: Creates an interaction between two users
+            operationId: createInteraction
+            parameters:
+                - name: id_main
+                  in: path
+                  description: The id of the user that makes the interaction
+                  required: true
+                  type: integer
+                - name: id_secondary
+                  in: path
+                  description: The id of the user that the interaction is going to be made with
+                  required: true
+                  type: integer
+                - name: match_state
+                  in: path
+                  description: State of the interaction
+                  required: true
+                  type: bool
+            responses:
+                "204":
+                    description: No Content
+                "404":
+                    description: Not Found
+                    schema:
+                        $ref: "#/definitions/ErrorModel"
+                "406":
+                    description: Not Acceptable (Invalid Params)
+                    schema:
+                        $ref: "#/definitions/ErrorModel"
+                "500":
+                    description: unexpected error
+                    schema:
+                        $ref: "#/definitions/ErrorModel"
+
+definitions:
+    # Users
+    Match:
+        type: object
+        properties:
+            Id:
+                type: integer
+            IdAnimalMain:
+                type: integer
+            IdAnimalSecondary:
+                type: integet
+            State:
+                type: bool
+
+    UsersList:
+        type: object
+        required:
+            - total
+            - list
+        properties:
+            total:
+                type: number
+            list:
+                type: array
+                items:
+                    $ref: "#/definitions/Match"
+
+    # Errors
+    ErrorModel:
+        type: object
+        required:
+            - message
+            - code
+        properties:
+            message:
+                type: string
+            code:
+                type: number
+            description:
+                type: object
