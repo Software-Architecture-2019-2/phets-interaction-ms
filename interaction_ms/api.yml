@@ -34,6 +34,8 @@ paths:
             responses:
                 "200":
                     description: Success
+                "500":
+                    description: Bad Request
 
     /api/interaction/Unlike:
         put:
@@ -53,6 +55,8 @@ paths:
             responses:
                 "200":
                     description: Success
+                "500":
+                    description: Bad Request
 
     /api/interaction/Create:
         post:
@@ -77,6 +81,8 @@ paths:
             responses:
                 "200":
                     description: Success
+                "500":
+                    description: Bad Request
 
 definitions:
     # Users
@@ -92,4 +98,10 @@ definitions:
             Match_1:
                 type: bool
             Match_2:
+                type: bool
+
+    Match:
+        type: object
+        properties:
+            State:
                 type: bool

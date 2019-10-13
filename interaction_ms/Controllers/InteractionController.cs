@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace interaction_ms.Controllers {
     [Route("api/[controller]")]
@@ -13,6 +14,7 @@ namespace interaction_ms.Controllers {
 
         public InteractionController(ApiDbContext context){
             this.context = context;
+            ServicePointManager.SecurityProtocol = ServicePointManager.SecurityProtocol | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
         }
 
         // POST api/interaction/Create?id_main=1&id_secondary=1&match_1=true
@@ -74,10 +76,18 @@ namespace interaction_ms.Controllers {
         // GET api/interaction/Match?id_main=1&id_secondary=1
         [HttpGet]
         [Route("Match")]
-        public ActionResult<bool> Get(int id_main, int id_secondary) {
+        public ActionResult<Match> Get(int id1, int id2) {
 
-            return context.Interactions.Any(x => (x.IdMain == id_secondary && x.IdSecondary == id_main && x.Match1 && x.Match2 != null && x.Match2 == true)) || 
-                context.Interactions.Any(x => (x.IdMain == id_main && x.IdSecondary == id_secondary && x.Match1 && x.Match2 != null && x.Match2 == true));
+            Match match = new Match();
+            if(context.Interactions.Any(x => (x.IdMain == id2 && x.IdSecondary == id1 && x.Match1 && x.Match2 != null && x.Match2 == true))){
+                match.State = true;
+                return match;
+            }
+            else if(context.Interactions.Any(x => (x.IdMain == id1 && x.IdSecondary == id2 && x.Match1 && x.Match2 != null && x.Match2 == true))){
+                match.State = true;
+                return match;
+            }
+            return BadRequest();
         }
     }
 }
