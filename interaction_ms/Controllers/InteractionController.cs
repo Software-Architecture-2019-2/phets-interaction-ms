@@ -42,50 +42,74 @@ namespace interaction_ms.Controllers {
         }
 
         [HttpGet]
-        [Route("History")]
-        public ActionResult<List<Interaction>> Get(int id1) {
+        [Route("MatchHistory")]
+        public ActionResult<List<OInteraction>> MatchHistory(int id1) {
 
             List<Interaction> interactions = new List<Interaction>();
             try{
-                if(context.Interactions.Any(x => (x.IdMain == id1 || x.IdSecondary == id1))){
-                    interactions = context.Interactions.Where(x => (x.IdMain == id1 || x.IdSecondary == id1));
-                    return interactions;    
+                if(context.Interactions.Any(x => (x.IdMain == id1 || x.IdSecondary == id1) && (x.Match1 && x.Match2.HasValue && x.Match2.Value))){
+                    interactions = context.Interactions.Where(x => (x.IdMain == id1 || x.IdSecondary == id1) && (x.Match1 && x.Match2.HasValue && x.Match2.Value)).ToList();
+                    return OInteraction.BuildFromInteractionsList(id1, interactions);    
                 }
             }
             catch{
                 return BadRequest();
             }
-            return interactions;
+            return OInteraction.BuildFromInteractionsList(id1, interactions);    
         }
 
-        // POST api/interaction/Create?id1=1&id2=1&state=true
+        [HttpGet]
+        [Route("InteractionHistory")]
+        public ActionResult<List<OInteraction>> InteractionHistory(int id1) {
+
+            List<Interaction> interactions = new List<Interaction>();
+            try{
+                if(context.Interactions.Any(x => (x.IdMain == id1 || x.IdSecondary == id1))){
+                    interactions = context.Interactions.Where(x => (x.IdMain == id1 || x.IdSecondary == id1)).ToList();
+                    return OInteraction.BuildFromInteractionsList(id1, interactions);  
+                }
+            }
+            catch{
+                return BadRequest();
+            }
+            return OInteraction.BuildFromInteractionsList(id1, interactions);
+        }
+
+        // POST api/interaction/Create?id1=1&id2=2&state=true
         [HttpPost]
         [Route("Create")]
         public ActionResult<Interaction> Post(int id1, int id2, bool state) {
 
             try{
-                //If the other dog has interacted with me
-                if(context.Interactions.Any(x => (x.IdMain == id2 && x.IdSecondary == id1))){
-                    Interaction interaction = context.Interactions.FirstOrDefault(x => (x.IdMain == id2 && x.IdSecondary == id1));
-                    interaction.Match2 = state;
-                    interaction = context.Interactions.FirstOrDefault(x => x.IdMain == id2 && x.IdSecondary == id1);
-                    context.SaveChanges();
-                    return interaction;
+
+                using (var context = new ApiDbContext(this.context.options))
+                {
+                    //If the other pet has interacted with me
+                    if(context.Interactions.Any(x => (x.IdMain == id2 && x.IdSecondary == id1))){
+                        Interaction interaction = context.Interactions.FirstOrDefault(x => (x.IdMain == id2 && x.IdSecondary == id1));
+                        interaction.Match2 = state;
+                        context.SaveChanges();
+                        return interaction;
+                    }
+                    else{// I'm the first interaction
+
+                        Interaction interaction = new Interaction {
+                            Id = 0,
+                            IdMain = id1,
+                            IdSecondary = id2,
+                            Match1 = state,
+                            Match2 = null
+                        };
+                        context.Interactions.Add(interaction);
+                        context.SaveChanges();
+                        return interaction;
+                    }
+                    // context.SaveChanges();
                 }
-                else{// Im the first interaction
-                    Interaction interaction = new Interaction {
-                        Id = 0,
-                        IdMain = id1,
-                        IdSecondary = id2,
-                        Match1 = state,
-                        Match2 = null
-                    };
-                    context.Interactions.Add(interaction);
-                    context.SaveChanges();
-                    return interaction;
-                }
+                
             }
-            catch{
+            catch(Exception e){
+                Console.WriteLine(e);
                 return BadRequest();
             }
         }
@@ -96,14 +120,14 @@ namespace interaction_ms.Controllers {
         public ActionResult<Interaction> Put(int id1, int id2) {
 
             try{
-                //If the other dog has interacted with me
+                //If the other pet has interacted with me
                 if(context.Interactions.Any(x => (x.IdMain == id2 && x.IdSecondary == id1))){
                     Interaction interaction = context.Interactions.FirstOrDefault(x => (x.IdMain == id2 && x.IdSecondary == id1));
                     interaction.Match2 = false;
                     context.SaveChanges();
                     return interaction;
                 }
-                else{// Im the first interaction
+                else{// I'm the first interaction
                     Interaction interaction = context.Interactions.FirstOrDefault(x => (x.IdMain == id1 && x.IdSecondary == id2));
                     interaction.Match1 = false;
                     context.SaveChanges();

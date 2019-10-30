@@ -3,7 +3,10 @@ using interaction_ms.Maps;
 
 public class ApiDbContext: DbContext{
 
-    public ApiDbContext(DbContextOptions<ApiDbContext> options): base(options){}
+    public DbContextOptions<ApiDbContext> options;
+    public ApiDbContext(DbContextOptions<ApiDbContext> options): base(options){
+        this.options = options; 
+    }
 
     public DbSet<Interaction> Interactions { get; set;}
 
