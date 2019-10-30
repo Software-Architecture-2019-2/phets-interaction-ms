@@ -41,6 +41,23 @@ namespace interaction_ms.Controllers {
             return match;
         }
 
+        [HttpGet]
+        [Route("History")]
+        public ActionResult<List<Interaction>> Get(int id1) {
+
+            List<Interaction> interactions = new List<Interaction>();
+            try{
+                if(context.Interactions.Any(x => (x.IdMain == id1 || x.IdSecondary == id1))){
+                    interactions = context.Interactions.Where(x => (x.IdMain == id1 || x.IdSecondary == id1));
+                    return interactions;    
+                }
+            }
+            catch{
+                return BadRequest();
+            }
+            return interactions;
+        }
+
         // POST api/interaction/Create?id1=1&id2=1&state=true
         [HttpPost]
         [Route("Create")]
