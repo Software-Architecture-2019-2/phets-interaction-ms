@@ -64,7 +64,7 @@ namespace interaction_ms.Controllers {
 
             List<Interaction> interactions = new List<Interaction>();
             try{
-                if(context.Interactions.Any(x => (x.IdMain == id1 || x.IdSecondary == id1))){
+                if(context.Interactions.Any(x => (x.IdMain == id1 || (x.IdSecondary == id1 && x.Match2.HasValue)))){
                     interactions = context.Interactions.Where(x => (x.IdMain == id1 || x.IdSecondary == id1)).ToList();
                     return OInteraction.BuildFromInteractionsList(id1, interactions);  
                 }
