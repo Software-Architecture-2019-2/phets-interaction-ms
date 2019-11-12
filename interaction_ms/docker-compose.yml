@@ -28,7 +28,7 @@ services:
             context: .
             dockerfile: Dockerfile
         ports:
-            - '4005:80'
+            - '4005:4005'
         environment:
             DB_CONNECTION_STRING: 'host=postgres_image;port=5432;database=interaction_db;username=phets_interaction;password=phets_interaction'
         networks:
