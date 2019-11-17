@@ -7,30 +7,32 @@ networks:
 services:
   phets-interaction-db:
     container_name: phets-interaction-db
-    image: postgres:11
+    image: postgres:latest
     ports:
       - "3005:5432"
     restart: always
     volumes:
       - ./dbscripts/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - phets-interaction-volume:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: "phets_interaction"
       POSTGRES_PASSWORD: "phets_interaction"
       POSTGRES_DB: "interaction_db"
     networks:
-      - phets-interaction-ms-dev
+      - interaction_ms-dev
   phets-interaction-ms:
-    build: .
+    image: interaction_ms
     container_name: phets-interaction-ms
     depends_on:
       - "phets-interaction-db"
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "4005:80"
+      - "4005:4005"
     environment:
-      DB_CONNECTION_STRING: "host=phets-interaction-db;port=5432;database=interaction_db;username=phets_interaction;password=phets_interaction"
+      DB_CONNECTION_STRING: "host=postgres_image;port=5432;database=interaction_db;username=phets_interaction;password=phets_interaction"
     networks:
-      - phets-interaction-ms-dev
+      - interaction_ms-dev
 
 volumes:
   phets-interaction-volume:
