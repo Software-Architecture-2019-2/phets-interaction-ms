@@ -11,12 +11,14 @@ using Microsoft.Extensions.Logging;
 namespace interaction_ms {
     public class Program {
         public static void Main(string[] args) {
-            CreateWebHostBuilder(args).Build().Run();
+            var defaultAddress = Environment.GetEnvironmentVariable("DEFAULT_ADDRESS");
+            // var defaultAddress = "http://0.0.0.0:4005/";
+            CreateWebHostBuilder(args, defaultAddress).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args, string defaultAddress) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseUrls("http://localhost:4005/");
+                .UseUrls(defaultAddress);
     }
 }
