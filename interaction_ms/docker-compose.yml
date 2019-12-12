@@ -1,29 +1,29 @@
-version: "3.4"
+version: '3.4'
 
 services:
-  phets-interaction-db:
-    container_name: phets-interaction-db
-    image: postgres:11
-    ports:
-      - "3005:5432"
-    restart: always
-    volumes:
-      - ./dbscripts/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - phets-interaction-volume:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: "phets_interaction"
-      POSTGRES_PASSWORD: "phets_interaction"
-      POSTGRES_DB: "interaction_db"
-  phets-interaction-ms:
-    build: .
-    container_name: phets-interaction-ms
-    depends_on:
-      - "phets-interaction-db"
-    ports:
-      - "4005:4005"
-    environment:
-      DB_CONNECTION_STRING: "host=phets-interaction-db;port=5432;database=interaction_db;username=phets_interaction;password=phets_interaction"
-      DEFAULT_ADDRESS: "http://0.0.0.0:4005/"
+    phets-interaction-db:
+        container_name: phets-interaction-db
+        image: phetsunal/phets-interaction-db
+        ports:
+            - '3005:5432'
+        restart: always
+        volumes:
+            - ./dbscripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+            - phets-interaction-volume:/var/lib/postgresql/data
+        environment:
+            POSTGRES_USER: 'phets_interaction'
+            POSTGRES_PASSWORD: 'phets_interaction'
+            POSTGRES_DB: 'interaction_db'
+    phets-interaction-ms:
+        build: .
+        container_name: phets-interaction-ms
+        depends_on:
+            - 'phets-interaction-db'
+        ports:
+            - '4005:4005'
+        environment:
+            DB_CONNECTION_STRING: 'host=phets-interaction-db;port=5432;database=interaction_db;username=phets_interaction;password=phets_interaction'
+            DEFAULT_ADDRESS: 'http://0.0.0.0:4005/'
 
 volumes:
-  phets-interaction-volume:
+    phets-interaction-volume:
